@@ -52,7 +52,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, favoritado, onToggleFavorito }) 
         </span>
       </div>
 
-      <a href={job.link} target="_blank" rel="noreferrer" className="inline-block mt-4 text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline">
+      <a href={job.link} target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline">
         Ver vaga original →
       </a>
     </div>
