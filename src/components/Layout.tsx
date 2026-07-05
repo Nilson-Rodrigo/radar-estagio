@@ -2,23 +2,21 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
+import RadarIcon from './ui/RadarIcon';
 
 const Layout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex flex-col font-sans">
+    <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-all duration-300">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/35">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-radar-500 rounded-xl flex items-center justify-center shadow-lg shadow-radar-500/25">
+              <RadarIcon className="w-5 h-5 text-ink-900" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent">
-              Radar Estágio
+            <span className="font-display font-bold text-xl tracking-tight text-slate-900">
+              Radar<span className="text-radar-500">Estágio</span>
             </span>
           </div>
 
@@ -36,8 +34,8 @@ const Layout: React.FC = () => {
                 className={({ isActive }) =>
                   `px-4 py-2 rounded-control text-sm font-semibold transition-all duration-200 ${
                     isActive
-                      ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-radar-500/10 text-radar-600'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`
                 }
               >
@@ -64,14 +62,14 @@ const Layout: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-6 transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
+      <footer className="border-t border-slate-200 bg-white py-6 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <div>
             &copy; {new Date().getFullYear()} Radar Estágio. Todos os direitos reservados.
           </div>
           <div className="flex gap-4 items-center">
-            <span className="hover:text-slate-800 dark:hover:text-white cursor-pointer transition-colors">Termos</span>
-            <span className="hover:text-slate-800 dark:hover:text-white cursor-pointer transition-colors">Privacidade</span>
+            <span className="hover:text-slate-800 cursor-pointer transition-colors">Termos</span>
+            <span className="hover:text-slate-800 cursor-pointer transition-colors">Privacidade</span>
             <Badge variant="brand">Base Architecture</Badge>
           </div>
         </div>

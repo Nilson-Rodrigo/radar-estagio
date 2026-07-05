@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Design System — Radar Estágio
-   Regra: cor de destaque é SEMPRE `brand` (roxo). success/danger só para
-   estados semânticos (confirmação/erro). Nunca usar purple/emerald/blue/amber
-   direto do Tailwind em uma página — sempre brand/success/danger. */
+/* Design System — Radar Estágio (identidade "tela de radar")
+  Regra: acento é SEMPRE `radar` (verde-fósforo). success/danger só para
+  estados semânticos. Fundo escuro usa `ink`, não slate/navy genérico.
+  Nunca usar purple/emerald/blue/amber/pink direto do Tailwind. */
 
 body {
   margin: 0;
