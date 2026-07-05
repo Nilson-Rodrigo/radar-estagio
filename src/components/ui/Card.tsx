@@ -5,15 +5,14 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Card — contêiner padrão para blocos de conteúdo (formulários, JobCard, etc).
- * Sempre usar este componente em vez de replicar
- * "bg-white dark:bg-slate-800 rounded-2xl shadow-xl..." manualmente.
+ * Card — contêiner padrão. Fundo `ink-800` (grafite), não slate/navy —
+ * mantém a coerência com a tela de radar mesmo em componentes de conteúdo.
  */
 const Card: React.FC<CardProps> = ({ hoverable = false, className = '', children, ...props }) => {
   return (
     <div
-      className={`bg-white dark:bg-slate-800 rounded-card shadow-card border border-slate-200 dark:border-slate-700 transition-all duration-300 ${
-        hoverable ? 'hover:shadow-card-hover' : ''
+      className={`bg-white dark:bg-ink-800 rounded-card shadow-card border border-slate-200 dark:border-ink-700 transition-all duration-300 ${
+        hoverable ? 'hover:shadow-card-hover hover:border-radar-500/20' : ''
       } ${className}`}
       {...props}
     >

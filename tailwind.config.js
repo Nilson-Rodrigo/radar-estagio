@@ -7,47 +7,57 @@ export default {
   theme: {
     extend: {
       // Design System — Radar Estágio
-      // Única paleta de marca usada em TODAS as páginas (não misturar com
-      // purple/emerald/blue/amber soltos do Tailwind — sempre usar "brand" e "accent").
+      // Identidade: tela de radar/sonar. Fundo grafite quase-preto (não azul-marinho
+      // genérico), acento único verde-fósforo (não roxo — evita o clichê visual de IA).
       colors: {
-        brand: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed', // cor primária: botões, links ativos, ícones de destaque
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
+        // Verde-fósforo — cor primária: botões, links ativos, ícones de destaque,
+        // e o "blip" (ponto detectado) do logo.
+        radar: {
+          50: '#EAFBF4',
+          100: '#CDF3E1',
+          200: '#9CE7C3',
+          300: '#64D5A0',
+          400: '#3ABF85',
+          500: '#22D48A',
+          600: '#17A86C',
+          700: '#127F54',
+          800: '#0D5C3D',
+          900: '#083D29',
         },
-        // Cores semânticas — uso restrito a um significado específico,
-        // nunca como "cor da página" (isso é o que causava a inconsistência).
+        // Fundo/superfície — grafite com leve matiz esverdeado, no lugar do
+        // slate/navy padrão de qualquer template de IA.
+        ink: {
+          900: '#0B0F0D', // fundo geral (header, footer, body)
+          800: '#121712', // superfície de cards
+          700: '#1B221C', // bordas/divisórias sutis
+        },
         success: {
           50: '#ecfdf5',
           100: '#d1fae5',
-          600: '#059669', // vaga favoritada, confirmação de cadastro
+          600: '#059669',
           700: '#047857',
         },
         danger: {
           50: '#fef2f2',
           100: '#fee2e2',
-          600: '#dc2626', // erro de validação, exclusão de vaga
+          600: '#dc2626',
           700: '#b91c1c',
         },
       },
       fontFamily: {
-        // Fonte única do projeto (aplicada globalmente via index.css)
+        // Corpo de texto: legibilidade.
         sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        // Títulos/logo: grotesca técnica, remete a painel/instrumento (radar),
+        // usada com moderação — não em todo o texto.
+        display: ['"Space Grotesk"', '"Inter"', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        card: '1rem',     // 16px — padrão para Card
-        control: '0.75rem', // 12px — padrão para Button/Input
+        card: '1rem',
+        control: '0.75rem',
       },
       boxShadow: {
-        card: '0 4px 6px -1px rgb(124 58 237 / 0.05), 0 2px 4px -2px rgb(124 58 237 / 0.05)',
-        'card-hover': '0 10px 15px -3px rgb(124 58 237 / 0.1), 0 4px 6px -4px rgb(124 58 237 / 0.1)',
+        card: '0 4px 6px -1px rgb(34 212 138 / 0.06), 0 2px 4px -2px rgb(34 212 138 / 0.06)',
+        'card-hover': '0 10px 15px -3px rgb(34 212 138 / 0.12), 0 4px 6px -4px rgb(34 212 138 / 0.1)',
       },
     },
   },
