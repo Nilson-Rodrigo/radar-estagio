@@ -4,10 +4,6 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   hoverable?: boolean;
 }
 
-/**
- * Card — contêiner padrão. Fundo `ink-800` (grafite), não slate/navy —
- * mantém a coerência com a tela de radar mesmo em componentes de conteúdo.
- */
 const Card: React.FC<CardProps> = ({ hoverable = false, className = '', children, ...props }) => {
   return (
     <div

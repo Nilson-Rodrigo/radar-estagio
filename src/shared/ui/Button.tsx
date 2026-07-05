@@ -25,11 +25,6 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: 'px-6 py-3 text-base',
 };
 
-/**
- * Button — único componente de botão do projeto.
- * variant="primary" usa texto escuro sobre verde-fósforo (contraste alto,
- * como um alerta luminoso de painel), nunca texto branco sobre a cor de acento.
- */
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',

@@ -5,10 +5,6 @@ interface SearchBarProps {
   onChange: (valor: string) => void;
 }
 
-/**
- * Barra de busca textual (UC03, fluxo principal). Componente puramente
- * visual — toda a lógica de filtragem fica no hook useJobs.
- */
 const SearchBar: React.FC<SearchBarProps> = ({ valor, onChange }) => {
   return (
     <div className="relative w-full">

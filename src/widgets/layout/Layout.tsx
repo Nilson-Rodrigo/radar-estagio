@@ -1,16 +1,14 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import Button from './ui/Button';
-import Badge from './ui/Badge';
-import RadarIcon from './ui/RadarIcon';
+import Button from '../../shared/ui/Button';
+import Badge from '../../shared/ui/Badge';
+import RadarIcon from '../../shared/ui/RadarIcon';
 
 const Layout: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans">
-      {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-radar-500 rounded-xl flex items-center justify-center shadow-lg shadow-radar-500/25">
               <RadarIcon className="w-5 h-5 text-ink-900" />
@@ -20,7 +18,6 @@ const Layout: React.FC = () => {
             </span>
           </div>
 
-          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-1">
             {[
               { path: '/vagas', label: 'Vagas' },
@@ -44,7 +41,6 @@ const Layout: React.FC = () => {
             ))}
           </nav>
 
-          {/* Auth Actions */}
           <div className="flex items-center gap-2">
             <NavLink to="/login">
               <Button variant="ghost" size="md">Entrar</Button>
@@ -56,12 +52,10 @@ const Layout: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Outlet />
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <div>

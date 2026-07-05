@@ -1,7 +1,7 @@
 import React from 'react';
-import type { Job } from '../types/Job';
-import Card from './ui/Card';
-import Badge from './ui/Badge';
+import type { Job } from '../../entities/job/model/types';
+import Card from '../../shared/ui/Card';
+import Badge from '../../shared/ui/Badge';
 
 interface JobCardProps {
   job: Job;
@@ -15,7 +15,6 @@ const variantePorModalidade: Record<Job['modalidade'], 'success' | 'brand' | 'ne
   Presencial: 'neutral',
 };
 
-/** Cartão individual de vaga (RF07 - Visualização de Detalhes / UC04 - Favoritar). */
 const JobCard: React.FC<JobCardProps> = ({ job, favoritado, onToggleFavorito }) => {
   return (
     <Card hoverable className="p-6">

@@ -1,6 +1,5 @@
 import React from 'react';
-import type { JobFilters } from '../services/jobs.service';
-import type { FilterOptions } from '../services/jobs.service';
+import type { JobFilters, FilterOptions } from '../../../entities/job/model/filters';
 
 interface FiltersProps {
   filters: JobFilters;
@@ -9,10 +8,6 @@ interface FiltersProps {
   onLimparFiltros: () => void;
 }
 
-/**
- * Filtros combinados por cidade, modalidade, empresa e área (UC03/RF06).
- * O botão "Limpar Filtros" implementa o Fluxo Alternativo FA01 do UC03.
- */
 const Filters: React.FC<FiltersProps> = ({ filters, opcoes, onAlterarFiltro, onLimparFiltros }) => {
   const baseSelect =
     'px-4 py-2 rounded-control bg-white dark:bg-ink-800 border border-slate-200 dark:border-ink-700 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-radar-500 transition-all duration-200';
