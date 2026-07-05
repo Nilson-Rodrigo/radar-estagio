@@ -14,62 +14,91 @@ export default function AdminPage() {
   const [modalAberto, setModalAberto] = useState(false);
 
   const [vagas, setVagas] = useState<Vaga[]>([]);
+  const [vagaEditando, setVagaEditando] = useState<Vaga | null>(null);
 
- async function adicionarVaga(vaga: Vaga) {
-  const { error } = await supabase
-    .from("vagas")
-    .insert({
-      titulo: vaga.titulo,
-      empresa: vaga.empresa,
-      cidade: vaga.cidade,
-      modalidade: vaga.modalidade,
-      bolsa: vaga.bolsa,
-      link: vaga.link,
-    });
+  async function adicionarVaga(vaga: Vaga) {
+  if (vagaEditando) {
+    const { error } = await supabase
+      .from("vagas")
+      .update({
+        titulo: vaga.titulo,
+        empresa: vaga.empresa,
+        cidade: vaga.cidade,
+        modalidade: vaga.modalidade,
+        bolsa: vaga.bolsa,
+        link: vaga.link,
+      })
+      .eq("id", vagaEditando.id);
 
-if (error) {
-  console.error("Erro Supabase:", error);
-  alert(error.message);
-  return;
-}
+    if (error) {
+      console.error(error);
+      alert("Erro ao atualizar a vaga.");
+      return;
+    }
 
-  carregarVagas();
-}
+    setVagaEditando(null);
+  } else {
+    const { error } = await supabase
+      .from("vagas")
+      .insert({
+        titulo: vaga.titulo,
+        empresa: vaga.empresa,
+        cidade: vaga.cidade,
+        modalidade: vaga.modalidade,
+        bolsa: vaga.bolsa,
+        link: vaga.link,
+      });
 
-async function excluirVaga(id: number) {
-  const { error } = await supabase
-    .from("vagas")
-    .delete()
-    .eq("id", id);
-
-  if (error) {
-    alert("Erro ao excluir a vaga.");
-    console.log(error);
-    return;
+    if (error) {
+      console.error(error);
+      alert("Erro ao cadastrar a vaga.");
+      return;
+    }
   }
 
-  setVagas((antigas) =>
-    antigas.filter((vaga) => vaga.id !== id)
-  );
+  carregarVagas();
+  setModalAberto(false);
 }
+
+  async function excluirVaga(id: number) {
+    const { error } = await supabase
+      .from("vagas")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert("Erro ao excluir a vaga.");
+      console.log(error);
+      return;
+    }
+
+    setVagas((antigas) =>
+      antigas.filter((vaga) => vaga.id !== id)
+    );
+  }
+
+  function editarVaga(vaga: Vaga) {
+    setVagaEditando(vaga);
+    setModalAberto(true);
+  }
 
   async function carregarVagas() {
-  const { data, error } = await supabase
-    .from("vagas")
-    .select("*");
+    const { data, error } = await supabase
+      .from("vagas")
+      .select("*");
 
-  if (error) {
-    console.error(error);
-    return;
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setVagas(data);
   }
 
-  setVagas(data);
-}
 
-
-useEffect(() => {
-  carregarVagas();
-}, []);
+  useEffect(() => {
+    carregarVagas();
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -81,12 +110,17 @@ useEffect(() => {
         <VagasTable
           vagas={vagas}
           onExcluir={excluirVaga}
+          onEditar={editarVaga}
         />
 
         {modalAberto && (
           <NovaVagaModal
-            onClose={() => setModalAberto(false)}
+            onClose={() => {
+              setModalAberto(false);
+              setVagaEditando(null);
+            }}
             onSalvar={adicionarVaga}
+            vagaEditando={vagaEditando}
           />
         )}
       </main>

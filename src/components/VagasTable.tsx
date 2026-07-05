@@ -3,11 +3,13 @@ import type { Vaga } from "../types/Vaga";
 type VagasTableProps = {
     vagas: Vaga[];
     onExcluir: (id: number) => void;
+    onEditar: (vaga: Vaga) => void;
 };
 
 export default function VagasTable({
     vagas,
     onExcluir,
+    onEditar,
 }: VagasTableProps) {
     return (
         <div className="bg-white rounded-xl shadow p-6">
@@ -33,7 +35,10 @@ export default function VagasTable({
                                 <td className="py-4">{vaga.empresa}</td>
                                 <td>{vaga.titulo}</td>
                                 <td>
-                                    <button className="text-blue-600 mr-4">
+                                    <button
+                                        onClick={() => onEditar(vaga)}
+                                        className="text-blue-600 mr-4"
+                                    >
                                         Editar
                                     </button>
 

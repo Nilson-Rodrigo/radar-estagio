@@ -1,18 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Vaga } from "../types/Vaga";
 
 type Props = {
     onClose: () => void;
     onSalvar: (vaga: Vaga) => void;
+    vagaEditando: Vaga | null;
 };
 
-export default function NovaVagaModal({ onClose, onSalvar }: Props) {
+export default function NovaVagaModal({
+    onClose,
+    onSalvar,
+    vagaEditando,
+}: Props) {
     const [titulo, setTitulo] = useState("");
     const [empresa, setEmpresa] = useState("");
     const [cidade, setCidade] = useState("");
     const [modalidade, setModalidade] = useState("Remoto");
     const [bolsa, setBolsa] = useState("");
     const [link, setLink] = useState("");
+
+    useEffect(() => {
+        if (!vagaEditando) return;
+
+        setTitulo(vagaEditando.titulo);
+        setEmpresa(vagaEditando.empresa);
+        setCidade(vagaEditando.cidade);
+        setModalidade(vagaEditando.modalidade);
+        setBolsa(vagaEditando.bolsa);
+        setLink(vagaEditando.link);
+    }, [vagaEditando]);
 
     function salvar() {
         if (!titulo.trim() || !empresa.trim()) {
@@ -21,7 +37,6 @@ export default function NovaVagaModal({ onClose, onSalvar }: Props) {
         }
 
         const novaVaga: Vaga = {
-            id: Date.now(),
             titulo,
             empresa,
             cidade,
@@ -42,7 +57,7 @@ export default function NovaVagaModal({ onClose, onSalvar }: Props) {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
             <div className="bg-white rounded-xl p-8 w-[500px]">
                 <h2 className="text-2xl font-bold mb-6">
-                    Nova Vaga
+                    {vagaEditando ? "Editar Vaga" : "Nova Vaga"}
                 </h2>
 
                 <div className="space-y-4">
