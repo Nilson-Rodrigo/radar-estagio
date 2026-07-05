@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from '../components/ui/PageHeader';
+import PageHeader from '../shared/ui/PageHeader';
 
 const Login: React.FC = () => {
   return (
