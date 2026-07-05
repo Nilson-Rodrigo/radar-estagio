@@ -81,7 +81,11 @@ export function useJobs(): UseJobsReturn {
 
   // Favoritos do usuário carregam assim que a sessão (mockada) estiver pronta (UC04)
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    if (!isAuthenticated || !user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- limpa favoritos ao deslogar, evita vazar favoritos de uma sessao anterior para a proxima (sugestao Sourcery no PR #3)
+      setFavoritosIds([]);
+      return;
+    }
 
     getFavoriteJobIds(user.id)
       .then(setFavoritosIds)

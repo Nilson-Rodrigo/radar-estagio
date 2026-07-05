@@ -3,7 +3,7 @@ import { useFavoritos } from '../widgets/favorites-list/model/useFavoritos';
 import JobCard from '../widgets/job-card/JobCard';
 
 const Favoritos: React.FC = () => {
-  const { jobs, loading, removerFavorito } = useFavoritos();
+  const { jobs, loading, erro, removerFavorito } = useFavoritos();
 
   return (
     <div className="flex flex-col gap-6">
@@ -20,13 +20,17 @@ const Favoritos: React.FC = () => {
         <p className="text-center text-slate-500 dark:text-slate-400 py-10">Carregando favoritos...</p>
       )}
 
-      {!loading && jobs.length === 0 && (
+      {erro && (
+        <p className="text-center text-danger-600 py-10">{erro}</p>
+      )}
+
+      {!loading && !erro && jobs.length === 0 && (
         <div className="text-center py-10 text-slate-500 dark:text-slate-400">
           Você ainda não favoritou nenhuma vaga. Vá até a página de Vagas e clique no coração das oportunidades de seu interesse.
         </div>
       )}
 
-      {!loading && jobs.length > 0 && (
+      {!loading && !erro && jobs.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jobs.map((job) => (
             <JobCard

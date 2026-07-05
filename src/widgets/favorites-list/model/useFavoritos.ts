@@ -7,6 +7,7 @@ import type { Job } from '../../../entities/job/model/types';
 interface UseFavoritosReturn {
   jobs: Job[];
   loading: boolean;
+  erro: string | null;
   removerFavorito: (jobId: string) => void;
 }
 
@@ -15,23 +16,30 @@ export function useFavoritos(): UseFavoritosReturn {
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
 
   const carregarFavoritos = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
+    setErro(null);
     try {
       const ids = await getFavoriteJobIds(user.id);
       const favoritados = await getJobsByIds(ids);
       setJobs(favoritados);
+    } catch {
+      setErro('Não foi possível carregar seus favoritos. Tente novamente.');
     } finally {
       setLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- carregarFavoritos seta loading antes do fetch assincrono (RF09); mesmo padrao do useJobs.
+    if (!isAuthenticated || !user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- limpa a lista ao deslogar, mesmo motivo do useJobs.ts
+      setJobs([]);
+      return;
+    }
     carregarFavoritos();
   }, [isAuthenticated, user, carregarFavoritos]);
 
@@ -48,5 +56,5 @@ export function useFavoritos(): UseFavoritosReturn {
     [user]
   );
 
-  return { jobs, loading, removerFavorito };
+  return { jobs, loading, erro, removerFavorito };
 }
