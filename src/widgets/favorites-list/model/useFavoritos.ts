@@ -31,6 +31,7 @@ export function useFavoritos(): UseFavoritosReturn {
 
   useEffect(() => {
     if (!isAuthenticated || !user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carregarFavoritos seta loading antes do fetch assincrono (RF09); mesmo padrao do useJobs.
     carregarFavoritos();
   }, [isAuthenticated, user, carregarFavoritos]);
 

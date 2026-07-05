@@ -56,8 +56,12 @@ export function useJobs(): UseJobsReturn {
   // Vagas recarregam sempre que a busca textual ou os filtros mudam (UC03)
   useEffect(() => {
     let cancelado = false;
+    /* eslint-disable react-hooks/set-state-in-effect -- reset de loading/erro a cada
+       nova busca ou filtro (UC03); é o padrão de fetch-em-efeito sem lib externa
+       (React Query/SWR), aceito pelo projeto nesta fase mockada. */
     setLoading(true);
     setErro(null);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     getJobs(termoBusca, filters)
       .then((resultado) => {
