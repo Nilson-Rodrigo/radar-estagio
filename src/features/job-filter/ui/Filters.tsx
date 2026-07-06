@@ -1,5 +1,6 @@
 import React from 'react';
 import type { JobFilters, FilterOptions } from '../../../entities/job/model/filters';
+import Button from '../../../shared/ui/Button';
 
 interface FiltersProps {
   filters: JobFilters;
@@ -30,12 +31,9 @@ const Filters: React.FC<FiltersProps> = ({ filters, opcoes, onAlterarFiltro, onL
         <option value="">Todas as áreas</option>
         {opcoes.areasAtuacao.map((a) => <option key={a} value={a}>{a}</option>)}
       </select>
-      <button
-        onClick={onLimparFiltros}
-        className="px-4 py-2 rounded-control text-sm font-semibold text-radar-600 dark:text-radar-400 hover:bg-radar-500/10 transition-all duration-200"
-      >
+      <Button variant="secondary" size="md" onClick={onLimparFiltros}>
         Limpar Filtros
-      </button>
+      </Button>
     </div>
   );
 };

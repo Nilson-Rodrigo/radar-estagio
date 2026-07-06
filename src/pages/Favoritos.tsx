@@ -1,18 +1,48 @@
 import React from 'react';
-import PageHeader from '../shared/ui/PageHeader';
+import { useFavoritos } from '../widgets/favorites-list/model/useFavoritos';
+import JobCard from '../widgets/job-card/JobCard';
 
 const Favoritos: React.FC = () => {
+  const { jobs, loading, erro, removerFavorito } = useFavoritos();
+
   return (
-    <PageHeader
-      icon={
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      }
-      title="Página de Favoritos"
-      description="Lista de vagas de estágio que o estudante salvou como interesse."
-      note="Componente temporário (Placeholder). A relação N:M entre estudantes e vagas será mapeada na próxima etapa (UC04)."
-    />
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          Meus Favoritos
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">
+          Vagas de estágio que você salvou como interesse.
+        </p>
+      </div>
+
+      {loading && (
+        <p className="text-center text-slate-500 dark:text-slate-400 py-10">Carregando favoritos...</p>
+      )}
+
+      {erro && (
+        <p className="text-center text-danger-600 py-10">{erro}</p>
+      )}
+
+      {!loading && !erro && jobs.length === 0 && (
+        <div className="text-center py-10 text-slate-500 dark:text-slate-400">
+          Você ainda não favoritou nenhuma vaga. Vá até a página de Vagas e clique no coração das oportunidades de seu interesse.
+        </div>
+      )}
+
+      {!loading && !erro && jobs.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {jobs.map((job) => (
+            <JobCard
+              key={job.id}
+              job={job}
+              favoritado={true}
+              onToggleFavorito={removerFavorito}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
