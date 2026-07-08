@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../entities/session/model/useAuth';
 import { authService } from '../services/auth.service';
 import { cadastroSchema, type CadastroFormValues } from '../schemas/auth.schemas';
@@ -148,7 +148,12 @@ const Cadastro: React.FC = () => {
           )}
 
           <div className="md:col-span-2 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-500">Já possui conta? <a className="font-semibold text-radar-600" href="/login">Entrar</a></p>
+            <p className="text-sm text-slate-500">
+              Já possui conta?{' '}
+              <Link className="font-semibold text-radar-600" to="/login">
+                Entrar
+              </Link>
+            </p>
             <Button type="submit" disabled={submitting}>
               {submitting ? 'Cadastrando...' : 'Criar conta'}
             </Button>

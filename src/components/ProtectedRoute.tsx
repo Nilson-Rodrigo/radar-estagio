@@ -1,15 +1,17 @@
+import type { ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../entities/session/model/useAuth';
 
 interface ProtectedRouteProps {
   allowedRoles?: Array<'estudante' | 'admin'>;
   redirectTo?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   allowedRoles = ['estudante', 'admin'],
   redirectTo = '/login',
+  children,
 }) => {
   const { user, loading, isAuthenticated } = useAuth();
   const location = useLocation();
@@ -30,7 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/vagas" replace />;
   }
 
-  return <Outlet />;
+  return <>{children ?? <Outlet />}</>;
 };
 
 export default ProtectedRoute;

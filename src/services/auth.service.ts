@@ -181,8 +181,17 @@ export const authService = {
         periodo: payload.periodo ?? null,
         role: 'estudante',
       }, { onConflict: 'id' });
-    } catch {
-      // Ignora falha de sincronização de perfil quando a tabela ainda não está disponível.
+    } catch (error) {
+      if (error instanceof Error) {
+        const relationMissing = /relation .*users.* does not exist|does not exist/i.test(error.message);
+        if (relationMissing) {
+          console.warn('Tabela users ainda não está disponível no Supabase.', error.message);
+        } else {
+          console.error('Falha ao sincronizar perfil do usuário após cadastro.', error);
+        }
+      } else {
+        console.error('Falha ao sincronizar perfil do usuário após cadastro.', error);
+      }
     }
 
     return buildUserFromAuthUser(data.user);

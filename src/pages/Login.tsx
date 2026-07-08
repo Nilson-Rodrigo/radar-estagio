@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../entities/session/model/useAuth';
 import { authService } from '../services/auth.service';
 import { loginSchema, type LoginFormValues } from '../schemas/auth.schemas';
@@ -14,6 +14,7 @@ const Login: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const isRedirectingRef = useRef(false);
 
   const from = useMemo(() => {
     const state = location.state as { from?: { pathname?: string } } | null;
@@ -31,7 +32,7 @@ const Login: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && !isRedirectingRef.current) {
       navigate(user.role === 'admin' ? '/admin' : from, { replace: true });
     }
   }, [authLoading, from, navigate, user]);
@@ -49,7 +50,8 @@ const Login: React.FC = () => {
 
       reset({ email: values.email, password: '' });
       setFeedback({ type: 'success', message: 'Login realizado com sucesso!' });
-      navigate(loggedUser.role === 'admin' ? '/admin' : '/vagas', { replace: true });
+      isRedirectingRef.current = true;
+      navigate(loggedUser.role === 'admin' ? '/admin' : from, { replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro inesperado ao fazer login.';
       setFeedback({ type: 'error', message });
@@ -111,7 +113,12 @@ const Login: React.FC = () => {
           )}
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-500">Ainda não possui conta? <a className="font-semibold text-radar-600" href="/cadastro">Crie agora</a></p>
+            <p className="text-sm text-slate-500">
+              Ainda não possui conta?{' '}
+              <Link className="font-semibold text-radar-600" to="/cadastro">
+                Crie agora
+              </Link>
+            </p>
             <Button type="submit" disabled={submitting}>
               {submitting ? 'Entrando...' : 'Entrar'}
             </Button>
