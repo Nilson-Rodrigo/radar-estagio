@@ -1,0 +1,41 @@
+import React from 'react';
+import type { JobFilters, FilterOptions } from '../../../entities/job/model/filters';
+import Button from '../../../shared/ui/Button';
+
+interface FiltersProps {
+  filters: JobFilters;
+  opcoes: FilterOptions;
+  onAlterarFiltro: (campo: keyof JobFilters, valor: string) => void;
+  onLimparFiltros: () => void;
+}
+
+const Filters: React.FC<FiltersProps> = ({ filters, opcoes, onAlterarFiltro, onLimparFiltros }) => {
+  const baseSelect =
+    'px-4 py-2 rounded-control bg-white dark:bg-ink-800 border border-slate-200 dark:border-ink-700 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-radar-500 transition-all duration-200';
+
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <select className={baseSelect} value={filters.cidade} onChange={(e) => onAlterarFiltro('cidade', e.target.value)}>
+        <option value="">Todas as cidades</option>
+        {opcoes.cidades.map((c) => <option key={c} value={c}>{c}</option>)}
+      </select>
+      <select className={baseSelect} value={filters.modalidade} onChange={(e) => onAlterarFiltro('modalidade', e.target.value)}>
+        <option value="">Todas as modalidades</option>
+        {opcoes.modalidades.map((m) => <option key={m} value={m}>{m}</option>)}
+      </select>
+      <select className={baseSelect} value={filters.empresa} onChange={(e) => onAlterarFiltro('empresa', e.target.value)}>
+        <option value="">Todas as empresas</option>
+        {opcoes.empresas.map((e) => <option key={e} value={e}>{e}</option>)}
+      </select>
+      <select className={baseSelect} value={filters.areaAtuacao} onChange={(e) => onAlterarFiltro('areaAtuacao', e.target.value)}>
+        <option value="">Todas as áreas</option>
+        {opcoes.areasAtuacao.map((a) => <option key={a} value={a}>{a}</option>)}
+      </select>
+      <Button variant="secondary" size="md" onClick={onLimparFiltros}>
+        Limpar Filtros
+      </Button>
+    </div>
+  );
+};
+
+export default Filters;

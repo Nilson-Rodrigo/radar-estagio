@@ -1,1 +1,17 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design System — Radar Estágio (identidade "tela de radar")
+  Regra: acento é SEMPRE `radar` (verde-fósforo). success/danger só para
+  estados semânticos. Fundo escuro usa `ink`, não slate/navy genérico.
+  Nunca usar purple/emerald/blue/amber/pink direto do Tailwind. */
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

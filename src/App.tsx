@@ -1,7 +1,9 @@
-import Admin from "./pages/AdminPage";
+import React from 'react';
+import { RouterProvider } from 'react-router-dom';
+import router from './app/router';
 
-function App() {
-  return <Admin />;
-}
+const App: React.FC = () => {
+  return <RouterProvider router={router} />;
+};
 
 export default App;
