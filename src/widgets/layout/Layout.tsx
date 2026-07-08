@@ -1,10 +1,20 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../entities/session/model/useAuth';
+import { authService } from '../../services/auth.service';
 import Button from '../../shared/ui/Button';
 import Badge from '../../shared/ui/Badge';
 import RadarIcon from '../../shared/ui/RadarIcon';
 
 const Layout: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, loading, isAuthenticated } = useAuth();
+
+  const handleLogout = async () => {
+    await authService.signOut();
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
@@ -42,12 +52,25 @@ const Layout: React.FC = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <NavLink to="/login">
-              <Button variant="ghost" size="md">Entrar</Button>
-            </NavLink>
-            <NavLink to="/cadastro">
-              <Button variant="primary" size="md">Cadastrar</Button>
-            </NavLink>
+            {loading ? (
+              <span className="text-sm text-slate-500">Carregando...</span>
+            ) : isAuthenticated && user ? (
+              <>
+                <span className="hidden text-sm font-medium text-slate-600 sm:block">{user.nome}</span>
+                <Button variant="ghost" size="md" onClick={handleLogout}>
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <>
+                <NavLink to="/login">
+                  <Button variant="ghost" size="md">Entrar</Button>
+                </NavLink>
+                <NavLink to="/cadastro">
+                  <Button variant="primary" size="md">Cadastrar</Button>
+                </NavLink>
+              </>
+            )}
           </div>
         </div>
       </header>

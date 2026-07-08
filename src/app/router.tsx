@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import ProtectedRoute from '../components/ProtectedRoute';
 import Layout from '../widgets/layout/Layout';
 import Login from '../pages/Login';
 import Cadastro from '../pages/Cadastro';
@@ -30,15 +31,27 @@ const router = createBrowserRouter([
       },
       {
         path: 'admin',
-        element: <Admin />,
+        element: (
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/login">
+            <Admin />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'perfil',
-        element: <Perfil />,
+        element: (
+          <ProtectedRoute allowedRoles={['estudante', 'admin']} redirectTo="/login">
+            <Perfil />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'favoritos',
-        element: <Favoritos />,
+        element: (
+          <ProtectedRoute allowedRoles={['estudante', 'admin']} redirectTo="/login">
+            <Favoritos />
+          </ProtectedRoute>
+        ),
       },
       {
         path: '*',
