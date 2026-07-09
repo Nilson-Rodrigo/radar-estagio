@@ -3,10 +3,9 @@ import { supabase } from "../lib/supabase";
 
 import { useState } from "react";
 
-import Sidebar from "../components/Sidebar";
-import AdminHeader from "../components/AdminHeader";
 import VagasTable from "../components/VagasTable";
 import NovaVagaModal from "../components/NovaVagaModal";
+import Button from "../shared/ui/Button";
 
 import type { Vaga } from "../types/Vaga";
 
@@ -101,29 +100,46 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div className="space-y-8">
+      <section className="flex flex-col gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-2xl space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Página do administrador
+          </p>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Painel do Administrador
+          </h1>
+          <p className="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+            Gerencie as vagas publicadas em uma tela simples, limpa e coerente com o restante do sistema.
+          </p>
+        </div>
 
-      <main className="flex-1 p-8">
-        <AdminHeader onNovaVaga={() => setModalAberto(true)} />
+        <Button
+          type="button"
+          onClick={() => setModalAberto(true)}
+          variant="secondary"
+          className="w-full border border-[#c9ddd2] bg-white text-slate-900 hover:bg-[#f6fbf7] sm:w-auto"
+        >
+          + Nova vaga
+        </Button>
+      </section>
 
-        <VagasTable
-          vagas={vagas}
-          onExcluir={excluirVaga}
-          onEditar={editarVaga}
+      <VagasTable
+        vagas={vagas}
+        onExcluir={excluirVaga}
+        onEditar={editarVaga}
+      />
+
+      {modalAberto && (
+        <NovaVagaModal
+          onClose={() => {
+            setModalAberto(false);
+            setVagaEditando(null);
+          }}
+          onSalvar={adicionarVaga}
+          vagaEditando={vagaEditando}
         />
-
-        {modalAberto && (
-          <NovaVagaModal
-            onClose={() => {
-              setModalAberto(false);
-              setVagaEditando(null);
-            }}
-            onSalvar={adicionarVaga}
-            vagaEditando={vagaEditando}
-          />
-        )}
-      </main>
+      )}
     </div>
   );
 }
