@@ -2,8 +2,10 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
 import Layout from '../widgets/layout/Layout';
 import Login from '../pages/Login';
+import AdminLogin from '../pages/AdminLogin';
 import Cadastro from '../pages/Cadastro';
 import Vagas from '../pages/Vagas';
+import VagaDetalhes from '../pages/VagaDetalhes';
 import Admin from '../pages/Admin';
 import Perfil from '../pages/Perfil';
 import Favoritos from '../pages/Favoritos';
@@ -22,8 +24,16 @@ const router = createBrowserRouter([
         element: <Vagas />,
       },
       {
+        path: 'vagas/:id',
+        element: <VagaDetalhes />,
+      },
+      {
         path: 'login',
         element: <Login />,
+      },
+      {
+        path: 'admin-login',
+        element: <AdminLogin />,
       },
       {
         path: 'cadastro',
@@ -32,7 +42,7 @@ const router = createBrowserRouter([
       {
         path: 'admin',
         element: (
-          <ProtectedRoute allowedRoles={['admin']} redirectTo="/login">
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin-login">
             <Admin />
           </ProtectedRoute>
         ),
