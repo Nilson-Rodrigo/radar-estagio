@@ -1,25 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../entities/session/model/useAuth';
 import { authService } from '../services/auth.service';
 import { loginSchema, type LoginFormValues } from '../schemas/auth.schemas';
 import Button from '../shared/ui/Button';
 import RadarIcon from '../shared/ui/RadarIcon';
 
-const Login: React.FC = () => {
+const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, loading: authLoading } = useAuth();
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const isRedirectingRef = useRef(false);
-
-  const from = useMemo(() => {
-    const state = location.state as { from?: { pathname?: string } } | null;
-    return state?.from?.pathname ?? '/vagas';
-  }, [location.state]);
 
   const {
     register,
@@ -35,13 +29,13 @@ const Login: React.FC = () => {
     if (!authLoading && user && !isRedirectingRef.current) {
       isRedirectingRef.current = true;
       if (user.role === 'admin') {
-        setFeedback({ type: 'error', message: 'Esta página é apenas para estudantes.' });
-        navigate('/admin-login', { replace: true });
+        navigate('/admin', { replace: true });
       } else {
-        navigate(from, { replace: true });
+        setFeedback({ type: 'error', message: 'Esta página é apenas para administradores.' });
+        navigate('/login', { replace: true });
       }
     }
-  }, [authLoading, from, navigate, user]);
+  }, [authLoading, navigate, user]);
 
   const onSubmit = async (values: LoginFormValues) => {
     setFeedback(null);
@@ -50,18 +44,20 @@ const Login: React.FC = () => {
     try {
       const loggedUser = await authService.signInWithPassword(values.email, values.password);
       if (!loggedUser) {
-        setFeedback({ type: 'error', message: 'Nao foi possivel concluir o login. Tente novamente.' });
+        setFeedback({ type: 'error', message: 'Não foi possível concluir o login. Tente novamente.' });
+        return;
+      }
+
+      if (loggedUser.role !== 'admin') {
+        setFeedback({ type: 'error', message: 'Acesso negado. Esta página é apenas para administradores.' });
+        await authService.signOut();
         return;
       }
 
       reset({ email: values.email, password: '' });
       setFeedback({ type: 'success', message: 'Login realizado com sucesso!' });
       isRedirectingRef.current = true;
-      if (loggedUser.role === 'admin') {
-        navigate('/admin-login', { replace: true });
-      } else {
-        navigate(from, { replace: true });
-      }
+      navigate('/admin', { replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro inesperado ao fazer login.';
       setFeedback({ type: 'error', message });
@@ -82,29 +78,29 @@ const Login: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-radar-300">Radar Est&aacute;gio</p>
-                <p className="text-xs text-slate-400">Oportunidades para estudantes</p>
+                <p className="text-xs text-slate-400">Painel Administrativo</p>
               </div>
             </div>
             <h1 className="max-w-sm font-display text-3xl font-bold leading-tight tracking-tight">
-              Entre para acompanhar vagas que combinam com seu momento.
+              Gerencie as vagas de est&aacute;gio
             </h1>
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-300">
-              Salve oportunidades, mantenha seus dados atualizados e encontre est&aacute;gios com uma busca mais simples.
+              Cadastre, edite e exclua vagas de est&aacute;gio. Mantenha o mural atualizado para os estudantes.
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <strong className="block text-lg text-radar-300">Filtro</strong>
-              <span className="text-xs text-slate-400">por &aacute;rea</span>
+              <strong className="block text-lg text-radar-300">Cadastrar</strong>
+              <span className="text-xs text-slate-400">novas vagas</span>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <strong className="block text-lg text-radar-300">Perfil</strong>
-              <span className="text-xs text-slate-400">do aluno</span>
+              <strong className="block text-lg text-radar-300">Editar</strong>
+              <span className="text-xs text-slate-400">vagas ativas</span>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <strong className="block text-lg text-radar-300">Vagas</strong>
-              <span className="text-xs text-slate-400">favoritas</span>
+              <strong className="block text-lg text-radar-300">Excluir</strong>
+              <span className="text-xs text-slate-400">vagas antigas</span>
             </div>
           </div>
         </aside>
@@ -115,10 +111,10 @@ const Login: React.FC = () => {
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-radar-500 text-ink-900 shadow-lg shadow-radar-500/20 lg:mx-0 lg:hidden">
                 <RadarIcon className="h-6 w-6" />
               </div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-radar-600">Acesso do estudante</p>
-              <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-slate-900">Entrar na conta</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-radar-600">Acesso do administrador</p>
+              <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-slate-900">Entrar no painel</h2>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Use seu e-mail e senha para voltar para suas vagas e favoritos.
+                Use suas credenciais de administrador para gerenciar as vagas.
               </p>
             </div>
 
@@ -132,7 +128,7 @@ const Login: React.FC = () => {
                   type="email"
                   autoComplete="email"
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-radar-500 focus:ring-2 focus:ring-radar-500/20"
-                  placeholder="seu.email@aluno.ifpi.edu.br"
+                  placeholder="admin@radar-estagio.com"
                   {...register('email')}
                 />
                 {errors.email && <p className="text-sm text-danger-600">{errors.email.message}</p>}
@@ -164,9 +160,9 @@ const Login: React.FC = () => {
               </Button>
 
               <p className="text-center text-sm text-slate-500">
-                Ainda n&atilde;o possui conta?{' '}
-                <Link className="font-semibold text-radar-600 hover:text-radar-700" to="/cadastro">
-                  Crie agora
+                &Eacute; estudante?{' '}
+                <Link className="font-semibold text-radar-600 hover:text-radar-700" to="/login">
+                  Acesso do estudante
                 </Link>
               </p>
             </form>
@@ -177,4 +173,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
