@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
 import Layout from '../widgets/layout/Layout';
+import Home from '../pages/Home';
 import Login from '../pages/Login';
 import AdminLogin from '../pages/AdminLogin';
 import Cadastro from '../pages/Cadastro';
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <Navigate to="/vagas" replace />,
+        element: <Home />,
       },
       {
         path: 'vagas',
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <Navigate to="/vagas" replace />,
+        element: <Navigate to="/" replace />,
       },
     ],
   },
