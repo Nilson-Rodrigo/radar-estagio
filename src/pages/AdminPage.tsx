@@ -5,18 +5,33 @@ import VagasTable from '../components/VagasTable';
 import NovaVagaModal from '../components/NovaVagaModal';
 import Button from '../shared/ui/Button';
 
+type Feedback = { type: 'success' | 'error'; message: string };
+
 export default function AdminPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [vagas, setVagas] = useState<Job[]>([]);
   const [vagaEditando, setVagaEditando] = useState<Job | null>(null);
+  const [carregando, setCarregando] = useState(true);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+
+  function mostrarFeedback(fb: Feedback) {
+    setFeedback(fb);
+    setTimeout(() => setFeedback(null), 4000);
+  }
 
   async function carregarVagas() {
-    const { data, error } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
+    setCarregando(true);
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     if (error) {
-      console.error('Erro ao carregar vagas:', error.message);
-      return;
+      mostrarFeedback({ type: 'error', message: `Erro ao carregar vagas: ${error.message}` });
+    } else {
+      setVagas((data ?? []) as Job[]);
     }
-    setVagas((data ?? []) as Job[]);
+    setCarregando(false);
   }
 
   async function adicionarVaga(vaga: Omit<Job, 'id'>) {
@@ -35,10 +50,10 @@ export default function AdminPage() {
         .eq('id', vagaEditando.id);
 
       if (error) {
-        console.error('Erro ao atualizar vaga:', error.message);
-        alert('Erro ao atualizar a vaga.');
+        mostrarFeedback({ type: 'error', message: `Erro ao atualizar: ${error.message}` });
         return;
       }
+      mostrarFeedback({ type: 'success', message: 'Vaga atualizada com sucesso!' });
       setVagaEditando(null);
     } else {
       const { error } = await supabase.from('jobs').insert({
@@ -52,24 +67,24 @@ export default function AdminPage() {
       });
 
       if (error) {
-        console.error('Erro ao cadastrar vaga:', error.message);
-        alert('Erro ao cadastrar a vaga.');
+        mostrarFeedback({ type: 'error', message: `Erro ao cadastrar: ${error.message}` });
         return;
       }
+      mostrarFeedback({ type: 'success', message: 'Vaga cadastrada com sucesso!' });
     }
 
-    carregarVagas();
+    await carregarVagas();
     setModalAberto(false);
   }
 
   async function excluirVaga(id: string) {
     const { error } = await supabase.from('jobs').delete().eq('id', id);
     if (error) {
-      console.error('Erro ao excluir vaga:', error.message);
-      alert('Erro ao excluir a vaga.');
+      mostrarFeedback({ type: 'error', message: `Erro ao excluir: ${error.message}` });
       return;
     }
     setVagas((antigas) => antigas.filter((v) => v.id !== id));
+    mostrarFeedback({ type: 'success', message: 'Vaga excluída.' });
   }
 
   function editarVaga(vaga: Job) {
@@ -83,16 +98,17 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-8">
+      {/* Cabeçalho */}
       <section className="flex flex-col gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Página do administrador
+            Painel administrativo
           </p>
           <h1 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Painel do Administrador
+            Gerenciar Vagas
           </h1>
           <p className="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-            Gerencie as vagas publicadas no mural de estágios.
+            Cadastre, edite e exclua vagas publicadas no mural de estágios.
           </p>
         </div>
 
@@ -102,15 +118,35 @@ export default function AdminPage() {
             setVagaEditando(null);
             setModalAberto(true);
           }}
-          variant="secondary"
-          className="w-full border border-[#c9ddd2] bg-white text-slate-900 hover:bg-[#f6fbf7] sm:w-auto"
+          variant="primary"
+          size="lg"
+          className="w-full sm:w-auto"
         >
           + Nova vaga
         </Button>
       </section>
 
-      <VagasTable vagas={vagas} onExcluir={excluirVaga} onEditar={editarVaga} />
+      {/* Feedback */}
+      {feedback && (
+        <div
+          className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
+            feedback.type === 'success'
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              : 'border-red-200 bg-red-50 text-red-700'
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
 
+      {/* Tabela */}
+      {carregando ? (
+        <p className="py-10 text-center text-sm text-slate-500">Carregando vagas...</p>
+      ) : (
+        <VagasTable vagas={vagas} onExcluir={excluirVaga} onEditar={editarVaga} />
+      )}
+
+      {/* Modal */}
       {modalAberto && (
         <NovaVagaModal
           onClose={() => {

@@ -2,10 +2,6 @@
 -- Radar Estágio — Modelagem e Persistência de Dados
 -- Responsável: Eric  |  Branch: feature/database-e-servicos
 -- Executar no SQL Editor do Supabase (uma vez por projeto).
---
--- Cobre a seção 6.2 (Dicionário de Dados) e 6.3 (Integridade Referencial)
--- do documento Trabalho_Final: tabelas users, jobs e favorites, com PK, FKs
--- com ON DELETE CASCADE e restrição de unicidade composta em favorites.
 -- ============================================================================
 
 -- gen_random_uuid()
@@ -13,16 +9,6 @@ create extension if not exists "pgcrypto";
 
 -- ----------------------------------------------------------------------------
 -- Tabela: users
--- Perfil das contas (estudantes e administradores). O id espelha o id do
--- Supabase Auth (auth.users), conforme dicionário de dados ("integrada
--- nativamente ao Supabase Auth").
---
--- OBS. sobre "senha": o dicionário lista uma coluna senha, mas no Supabase a
--- senha é armazenada com hash pela própria camada Auth (auth.users) e NUNCA
--- deve ser duplicada/trafegada aqui. Por isso ela é intencionalmente omitida
--- desta tabela de perfil — o auth.service.ts do Wesley também faz upsert sem
--- senha. (Se o professor exigir a coluna literal, dá para adicioná-la, mas
--- não como NOT NULL, senão quebra o cadastro.)
 -- ----------------------------------------------------------------------------
 create table if not exists public.users (
   id         uuid         primary key references auth.users (id) on delete cascade,
@@ -37,7 +23,6 @@ create table if not exists public.users (
 
 -- ----------------------------------------------------------------------------
 -- Tabela: jobs
--- Vagas de estágio agregadas / cadastradas pelo administrador.
 -- ----------------------------------------------------------------------------
 create table if not exists public.jobs (
   id           uuid         primary key default gen_random_uuid(),
@@ -52,16 +37,13 @@ create table if not exists public.jobs (
   created_at   timestamptz  not null default now()
 );
 
--- Índices para acelerar os filtros do módulo do estudante (UC03).
 create index if not exists jobs_cidade_idx       on public.jobs (cidade);
 create index if not exists jobs_modalidade_idx   on public.jobs (modalidade);
 create index if not exists jobs_empresa_idx      on public.jobs (empresa);
 create index if not exists jobs_area_atuacao_idx on public.jobs (area_atuacao);
 
 -- ----------------------------------------------------------------------------
--- Tabela: favorites (associativa N:M entre users e jobs)
--- FKs com ON DELETE CASCADE + unicidade composta (user_id, job_id) para
--- impedir favoritar a mesma vaga duas vezes (UC04).
+-- Tabela: favorites
 -- ----------------------------------------------------------------------------
 create table if not exists public.favorites (
   id         uuid        primary key default gen_random_uuid(),
@@ -74,26 +56,81 @@ create table if not exists public.favorites (
 create index if not exists favorites_user_id_idx on public.favorites (user_id);
 
 -- ============================================================================
--- (OPCIONAL) Row Level Security — recomendado, mas formalmente é tema de
--- segurança (Wesley/Moisés). Deixado comentado para não bloquear o acesso via
--- chave anon antes de o time alinhar as políticas. Descomente em conjunto.
+-- Row Level Security
 -- ============================================================================
--- alter table public.users     enable row level security;
--- alter table public.jobs      enable row level security;
--- alter table public.favorites enable row level security;
+
+alter table public.users     enable row level security;
+alter table public.jobs      enable row level security;
+alter table public.favorites enable row level security;
+
+-- ----------------------------------------------------------------------------
+-- Políticas da tabela: users
+-- Cada usuário lê e edita apenas o próprio perfil.
+-- Service role (usado por funções internas) tem acesso total.
+-- ----------------------------------------------------------------------------
+create policy "users_self_select" on public.users
+  for select using (auth.uid() = id);
+
+create policy "users_self_insert" on public.users
+  for insert with check (auth.uid() = id);
+
+create policy "users_self_update" on public.users
+  for update using (auth.uid() = id);
+
+-- ----------------------------------------------------------------------------
+-- Políticas da tabela: jobs
+-- Leitura: qualquer pessoa (inclusive não autenticada) pode ver as vagas.
+-- Escrita: somente usuários com role = 'admin' na tabela users.
+-- ----------------------------------------------------------------------------
+create policy "jobs_select_publico" on public.jobs
+  for select using (true);
+
+create policy "jobs_insert_admin" on public.jobs
+  for insert with check (
+    exists (
+      select 1 from public.users
+      where id = auth.uid() and role = 'admin'
+    )
+  );
+
+create policy "jobs_update_admin" on public.jobs
+  for update using (
+    exists (
+      select 1 from public.users
+      where id = auth.uid() and role = 'admin'
+    )
+  );
+
+create policy "jobs_delete_admin" on public.jobs
+  for delete using (
+    exists (
+      select 1 from public.users
+      where id = auth.uid() and role = 'admin'
+    )
+  );
+
+-- ----------------------------------------------------------------------------
+-- Políticas da tabela: favorites
+-- Cada estudante gerencia apenas os próprios favoritos.
+-- ----------------------------------------------------------------------------
+create policy "favorites_self_all" on public.favorites
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- ============================================================================
+-- Como criar o primeiro usuário administrador
+-- ============================================================================
+-- 1. Crie uma conta normalmente em /cadastro (ou direto via Supabase Auth).
+-- 2. Copie o UUID do usuário em Authentication > Users no painel do Supabase.
+-- 3. Execute o SQL abaixo substituindo o UUID e o e-mail corretos:
 --
--- -- jobs: leitura liberada para qualquer usuário autenticado (UC03/UC04)
--- create policy "jobs_select_todos" on public.jobs
---   for select using (true);
+-- INSERT INTO public.users (id, nome, email, role)
+-- VALUES (
+--   '<UUID_DO_AUTH_AQUI>',
+--   'Administrador',
+--   '<SEU_EMAIL_AQUI>',
+--   'admin'
+-- )
+-- ON CONFLICT (id) DO UPDATE SET role = 'admin';
 --
--- -- users: cada um enxerga e edita apenas o próprio perfil
--- create policy "users_self_select" on public.users
---   for select using (auth.uid() = id);
--- create policy "users_self_upsert" on public.users
---   for insert with check (auth.uid() = id);
--- create policy "users_self_update" on public.users
---   for update using (auth.uid() = id);
---
--- -- favorites: cada estudante gerencia apenas os próprios favoritos
--- create policy "favorites_self_all" on public.favorites
---   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+-- Pronto. Agora esse e-mail pode logar em /admin-login e acessar /admin.
+-- ============================================================================
