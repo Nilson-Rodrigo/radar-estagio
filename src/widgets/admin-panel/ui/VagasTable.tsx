@@ -1,7 +1,7 @@
-import type { Job } from '../entities/job/model/types';
-import Badge from '../shared/ui/Badge';
-import Button from '../shared/ui/Button';
-import Card from '../shared/ui/Card';
+import type { Job } from '../../../entities/job/model/types';
+import Badge from '../../../shared/ui/Badge';
+import Button from '../../../shared/ui/Button';
+import Card from '../../../shared/ui/Card';
 
 const variantePorModalidade: Record<Job['modalidade'], 'success' | 'brand' | 'neutral'> = {
   Remoto: 'success',
