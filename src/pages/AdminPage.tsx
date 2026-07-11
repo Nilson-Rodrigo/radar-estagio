@@ -1,99 +1,81 @@
-import { useEffect } from "react";
-import { supabase } from "../lib/supabase";
-
-import { useState } from "react";
-
-import VagasTable from "../components/VagasTable";
-import NovaVagaModal from "../components/NovaVagaModal";
-import Button from "../shared/ui/Button";
-
-import type { Vaga } from "../types/Vaga";
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
+import type { Job } from '../entities/job/model/types';
+import VagasTable from '../components/VagasTable';
+import NovaVagaModal from '../components/NovaVagaModal';
+import Button from '../shared/ui/Button';
 
 export default function AdminPage() {
   const [modalAberto, setModalAberto] = useState(false);
+  const [vagas, setVagas] = useState<Job[]>([]);
+  const [vagaEditando, setVagaEditando] = useState<Job | null>(null);
 
-  const [vagas, setVagas] = useState<Vaga[]>([]);
-  const [vagaEditando, setVagaEditando] = useState<Vaga | null>(null);
-
-  async function adicionarVaga(vaga: Vaga) {
-  if (vagaEditando) {
-    const { error } = await supabase
-      .from("vagas")
-      .update({
-        titulo: vaga.titulo,
-        empresa: vaga.empresa,
-        cidade: vaga.cidade,
-        modalidade: vaga.modalidade,
-        bolsa: vaga.bolsa,
-        link: vaga.link,
-      })
-      .eq("id", vagaEditando.id);
-
+  async function carregarVagas() {
+    const { data, error } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
     if (error) {
-      console.error(error);
-      alert("Erro ao atualizar a vaga.");
+      console.error('Erro ao carregar vagas:', error.message);
       return;
     }
+    setVagas((data ?? []) as Job[]);
+  }
 
-    setVagaEditando(null);
-  } else {
-    const { error } = await supabase
-      .from("vagas")
-      .insert({
+  async function adicionarVaga(vaga: Omit<Job, 'id'>) {
+    if (vagaEditando) {
+      const { error } = await supabase
+        .from('jobs')
+        .update({
+          titulo: vaga.titulo,
+          empresa: vaga.empresa,
+          descricao: vaga.descricao,
+          cidade: vaga.cidade,
+          modalidade: vaga.modalidade,
+          area_atuacao: vaga.area_atuacao,
+          link: vaga.link,
+        })
+        .eq('id', vagaEditando.id);
+
+      if (error) {
+        console.error('Erro ao atualizar vaga:', error.message);
+        alert('Erro ao atualizar a vaga.');
+        return;
+      }
+      setVagaEditando(null);
+    } else {
+      const { error } = await supabase.from('jobs').insert({
         titulo: vaga.titulo,
         empresa: vaga.empresa,
+        descricao: vaga.descricao,
         cidade: vaga.cidade,
         modalidade: vaga.modalidade,
-        bolsa: vaga.bolsa,
+        area_atuacao: vaga.area_atuacao,
         link: vaga.link,
       });
 
-    if (error) {
-      console.error(error);
-      alert("Erro ao cadastrar a vaga.");
-      return;
-    }
-  }
-
-  carregarVagas();
-  setModalAberto(false);
-}
-
-  async function excluirVaga(id: number) {
-    const { error } = await supabase
-      .from("vagas")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      alert("Erro ao excluir a vaga.");
-      console.log(error);
-      return;
+      if (error) {
+        console.error('Erro ao cadastrar vaga:', error.message);
+        alert('Erro ao cadastrar a vaga.');
+        return;
+      }
     }
 
-    setVagas((antigas) =>
-      antigas.filter((vaga) => vaga.id !== id)
-    );
+    carregarVagas();
+    setModalAberto(false);
   }
 
-  function editarVaga(vaga: Vaga) {
+  async function excluirVaga(id: string) {
+    const { error } = await supabase.from('jobs').delete().eq('id', id);
+    if (error) {
+      console.error('Erro ao excluir vaga:', error.message);
+      alert('Erro ao excluir a vaga.');
+      return;
+    }
+    setVagas((antigas) => antigas.filter((v) => v.id !== id));
+  }
+
+  function editarVaga(vaga: Job) {
     setVagaEditando(vaga);
     setModalAberto(true);
   }
-
-  async function carregarVagas() {
-    const { data, error } = await supabase
-      .from("vagas")
-      .select("*");
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setVagas(data);
-  }
-
 
   useEffect(() => {
     carregarVagas();
@@ -110,13 +92,16 @@ export default function AdminPage() {
             Painel do Administrador
           </h1>
           <p className="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-            Gerencie as vagas publicadas em uma tela simples, limpa e coerente com o restante do sistema.
+            Gerencie as vagas publicadas no mural de estágios.
           </p>
         </div>
 
         <Button
           type="button"
-          onClick={() => setModalAberto(true)}
+          onClick={() => {
+            setVagaEditando(null);
+            setModalAberto(true);
+          }}
           variant="secondary"
           className="w-full border border-[#c9ddd2] bg-white text-slate-900 hover:bg-[#f6fbf7] sm:w-auto"
         >
@@ -124,11 +109,7 @@ export default function AdminPage() {
         </Button>
       </section>
 
-      <VagasTable
-        vagas={vagas}
-        onExcluir={excluirVaga}
-        onEditar={editarVaga}
-      />
+      <VagasTable vagas={vagas} onExcluir={excluirVaga} onEditar={editarVaga} />
 
       {modalAberto && (
         <NovaVagaModal
