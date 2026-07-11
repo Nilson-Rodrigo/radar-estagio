@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../entities/session/model/useAuth';
-import { authService } from '../../services/auth.service';
+import { authService } from '../../entities/session/api/auth.service';
 import Button from '../../shared/ui/Button';
 import RadarIcon from '../../shared/ui/RadarIcon';
 

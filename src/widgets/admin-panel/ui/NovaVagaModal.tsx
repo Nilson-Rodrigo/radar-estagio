@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import type { Job } from '../entities/job/model/types';
-import Button from '../shared/ui/Button';
-import Card from '../shared/ui/Card';
+import type { Job } from '../../../entities/job/model/types';
+import Button from '../../../shared/ui/Button';
+import Card from '../../../shared/ui/Card';
 
 type Props = {
   onClose: () => void;

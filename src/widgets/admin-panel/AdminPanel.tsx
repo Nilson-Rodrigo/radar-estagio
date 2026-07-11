@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-import type { Job } from '../entities/job/model/types';
-import VagasTable from '../components/VagasTable';
-import NovaVagaModal from '../components/NovaVagaModal';
-import Button from '../shared/ui/Button';
+import { supabase } from '../../shared/lib/supabase';
+import type { Job } from '../../entities/job/model/types';
+import VagasTable from './ui/VagasTable';
+import NovaVagaModal from './ui/NovaVagaModal';
+import Button from '../../shared/ui/Button';
 
 type Feedback = { type: 'success' | 'error'; message: string };
 

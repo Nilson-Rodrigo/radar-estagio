@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../entities/session/model/useAuth';
+import { useAuth } from '../../entities/session/model/useAuth';
 
 interface ProtectedRouteProps {
   allowedRoles?: Array<'estudante' | 'admin'>;

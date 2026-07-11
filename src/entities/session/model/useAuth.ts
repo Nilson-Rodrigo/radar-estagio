@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { authService } from '../../../services/auth.service';
+import { authService } from '../api/auth.service';
 import type { User, UseAuthReturn } from './types';
 
 export function useAuth(): UseAuthReturn {

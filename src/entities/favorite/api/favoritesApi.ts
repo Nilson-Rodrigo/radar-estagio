@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../shared/lib/supabase';
 
 // Integração real com o Supabase Database (tabela `favorites`) — UC04.
 // Assinaturas idênticas às da versão mock da Ana Rosa: getFavoriteJobIds e

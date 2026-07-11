@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../shared/lib/supabase';
 import type { Job } from '../model/types';
 import type { JobFilters, FilterOptions } from '../model/filters';
 

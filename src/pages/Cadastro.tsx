@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../entities/session/model/useAuth';
-import { authService } from '../services/auth.service';
-import { cadastroSchema, type CadastroFormValues } from '../schemas/auth.schemas';
+import { authService } from '../entities/session/api/auth.service';
+import { cadastroSchema, type CadastroFormValues } from '../entities/session/model/auth.schemas';
 import Button from '../shared/ui/Button';
 import RadarIcon from '../shared/ui/RadarIcon';
 

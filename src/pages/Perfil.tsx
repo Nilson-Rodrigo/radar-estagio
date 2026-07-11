@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../entities/session/model/useAuth';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../shared/lib/supabase';
 import Button from '../shared/ui/Button';
 
 const perfilSchema = z.object({
