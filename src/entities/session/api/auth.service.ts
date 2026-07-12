@@ -67,8 +67,28 @@ function mapSupabaseError(error: { message?: string; code?: string } | null | un
     return new Error('E-mail ou senha incorretos.');
   }
 
-  if (message.includes('over request rate limit') || message.includes('rate limit')) {
-    return new Error('Muitas tentativas. Aguarde 2 minutos antes de tentar novamente.');
+  if (code === 'email_not_confirmed' || message.includes('email not confirmed') || message.includes('email_not_confirmed')) {
+    return new Error('CONFIRMAR_EMAIL');
+  }
+
+  if (
+    code === 'over_request_rate_limit' ||
+    code === 'rate_limit_exceeded' ||
+    message.includes('over request rate limit') ||
+    message.includes('rate limit') ||
+    message.includes('too many requests') ||
+    message.includes('retry after')
+  ) {
+    const secondsMatch = message.match(/(\d+)\s*(segundos?|seconds?)/i);
+    const minutesMatch = message.match(/(\d+)\s*(minutos?|minutes?)/i);
+    let waitLabel = 'alguns minutos';
+    if (secondsMatch) {
+      const seconds = Number(secondsMatch[1]);
+      waitLabel = seconds >= 60 ? `${Math.ceil(seconds / 60)} minuto(s)` : `${seconds} segundo(s)`;
+    } else if (minutesMatch) {
+      waitLabel = `${Number(minutesMatch[1])} minuto(s)`;
+    }
+    return new Error(`Muitas tentativas. Aguarde ${waitLabel} antes de tentar novamente.`);
   }
 
   if (message.includes('network') || message.includes('timeout') || message.includes('fetch')) {
@@ -117,6 +137,11 @@ async function buildUserFromAuthUser(authUser: {
   };
 }
 
+export interface SignUpResult {
+  user: User | null;
+  needsEmailConfirmation: boolean;
+}
+
 export const authService = {
   isConfigured(): boolean {
     return Boolean(supabase);
@@ -145,7 +170,7 @@ export const authService = {
     return buildUserFromAuthUser(userData.user);
   },
 
-  async signUpWithEmail(email: string, password: string, payload: { nome: string; curso?: string | null; periodo?: number | null }): Promise<User | null> {
+  async signUpWithEmail(email: string, password: string, payload: { nome: string; curso?: string | null; periodo?: number | null }): Promise<SignUpResult> {
     if (!supabase) {
       throw mapSupabaseError(null);
     }
@@ -169,7 +194,7 @@ export const authService = {
     }
 
     if (!data.user) {
-      return null;
+      return { user: null, needsEmailConfirmation: false };
     }
 
     try {
@@ -194,7 +219,44 @@ export const authService = {
       }
     }
 
-    return buildUserFromAuthUser(data.user);
+    const user = await buildUserFromAuthUser(data.user);
+    const needsEmailConfirmation = !data.session;
+
+    return { user, needsEmailConfirmation };
+  },
+
+  async resendConfirmationEmail(email: string): Promise<void> {
+    if (!supabase) {
+      throw mapSupabaseError(null);
+    }
+
+    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    if (error) {
+      throw mapSupabaseError(error);
+    }
+  },
+
+  async resetPasswordForEmail(email: string): Promise<void> {
+    if (!supabase) {
+      throw mapSupabaseError(null);
+    }
+
+    const redirectTo = `${window.location.origin}/redefinir-senha`;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) {
+      throw mapSupabaseError(error);
+    }
+  },
+
+  async updatePassword(password: string): Promise<void> {
+    if (!supabase) {
+      throw mapSupabaseError(null);
+    }
+
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      throw mapSupabaseError(error);
+    }
   },
 
   async signInWithPassword(email: string, password: string): Promise<User | null> {

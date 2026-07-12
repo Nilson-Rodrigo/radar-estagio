@@ -5,6 +5,8 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import AdminLogin from '../pages/AdminLogin';
 import Cadastro from '../pages/Cadastro';
+import EsqueciSenha from '../pages/EsqueciSenha';
+import RedefinirSenha from '../pages/RedefinirSenha';
 import Vagas from '../pages/Vagas';
 import VagaDetalhes from '../pages/VagaDetalhes';
 import Admin from '../pages/Admin';
@@ -39,6 +41,14 @@ const router = createBrowserRouter([
       {
         path: 'cadastro',
         element: <Cadastro />,
+      },
+      {
+        path: 'esqueci-senha',
+        element: <EsqueciSenha />,
+      },
+      {
+        path: 'redefinir-senha',
+        element: <RedefinirSenha />,
       },
       {
         path: 'admin',
