@@ -14,6 +14,8 @@ const Cadastro: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
 
   const {
     register,
@@ -32,9 +34,21 @@ const Cadastro: React.FC = () => {
     }
   }, [authLoading, navigate, user]);
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((current) => (current > 0 ? current - 1 : 0)), 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   const onSubmit = async (values: CadastroFormValues) => {
     setFeedback(null);
     setSubmitting(true);
+
+    if (pendingEmail && values.email.toLowerCase() === pendingEmail.toLowerCase()) {
+      setFeedback({ type: 'error', message: 'Já enviamos o link de confirmação para este e-mail. Verifique sua caixa de entrada (incluindo spam/lixo).' });
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const { needsEmailConfirmation } = await authService.signUpWithEmail(values.email, values.password, {
@@ -46,6 +60,8 @@ const Cadastro: React.FC = () => {
       reset({ nome: '', email: '', password: '', curso: '', periodo: '' });
 
       if (needsEmailConfirmation) {
+        setPendingEmail(values.email);
+        setCooldown(60);
         setFeedback({ type: 'success', message: 'Cadastro recebido! Enviamos um e-mail de confirmação. Confirme para acessar.' });
         return;
       }
@@ -193,8 +209,8 @@ const Cadastro: React.FC = () => {
               )}
 
               <div className="md:col-span-2 space-y-4">
-                <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-                  {submitting ? 'Cadastrando...' : 'Criar conta'}
+                <Button type="submit" size="lg" className="w-full" disabled={submitting || cooldown > 0}>
+                  {submitting ? 'Cadastrando...' : cooldown > 0 ? `Aguarde ${cooldown}s` : 'Criar conta'}
                 </Button>
                 <p className="text-center text-sm text-slate-500">
                   J&aacute; possui conta?{' '}
