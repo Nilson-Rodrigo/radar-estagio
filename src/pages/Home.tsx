@@ -38,7 +38,8 @@ const Home: React.FC = () => {
 
           <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
             Vagas de estágio organizadas, filtradas por área e modalidade — tudo
-            em um lugar pensado para estudantes do IFPI.
+            em um lugar pensado para estudantes acadêmicos iniciantes
+            .
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
