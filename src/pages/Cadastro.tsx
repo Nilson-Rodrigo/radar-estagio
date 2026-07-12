@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../entities/session/model/useAuth';
 import { authService } from '../entities/session/api/auth.service';
 import { cadastroSchema, type CadastroFormValues } from '../entities/session/model/auth.schemas';
+import PasswordStrength from '../shared/ui/PasswordStrength';
 import Button from '../shared/ui/Button';
 import RadarIcon from '../shared/ui/RadarIcon';
 
@@ -17,6 +18,7 @@ const Cadastro: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
     reset,
   } = useForm<CadastroFormValues>({
@@ -35,18 +37,19 @@ const Cadastro: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const createdUser = await authService.signUpWithEmail(values.email, values.password, {
+      const { needsEmailConfirmation } = await authService.signUpWithEmail(values.email, values.password, {
         nome: values.nome,
         curso: values.curso || null,
         periodo: values.periodo ? Number(values.periodo) : null,
       });
 
-      if (!createdUser) {
-        setFeedback({ type: 'error', message: 'Nao foi possivel concluir o cadastro. Tente novamente.' });
+      reset({ nome: '', email: '', password: '', curso: '', periodo: '' });
+
+      if (needsEmailConfirmation) {
+        setFeedback({ type: 'success', message: 'Cadastro recebido! Enviamos um e-mail de confirmação. Confirme para acessar.' });
         return;
       }
 
-      reset({ nome: '', email: '', password: '', curso: '', periodo: '' });
       setFeedback({ type: 'success', message: 'Cadastro realizado com sucesso! Voce ja pode acessar o sistema.' });
       navigate('/vagas', { replace: true });
     } catch (error) {
@@ -154,6 +157,7 @@ const Cadastro: React.FC = () => {
                   {...register('password')}
                 />
                 {errors.password && <p className="text-sm text-danger-600">{errors.password.message}</p>}
+                <PasswordStrength password={watch('password')} />
               </div>
 
               <div className="space-y-2">

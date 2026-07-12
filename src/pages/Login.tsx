@@ -14,6 +14,8 @@ const Login: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const isRedirectingRef = useRef(false);
 
   const from = useMemo(() => {
@@ -24,6 +26,7 @@ const Login: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
     reset,
   } = useForm<LoginFormValues>({
@@ -42,6 +45,21 @@ const Login: React.FC = () => {
       }
     }
   }, [authLoading, from, navigate, user]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((current) => (current > 0 ? current - 1 : 0)), 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const parseWaitSeconds = (text: string): number => {
+    const lower = text.toLowerCase();
+    const minutes = lower.match(/(\d+)\s*(minutos?|minutes?)/);
+    if (minutes) return Number(minutes[1]) * 60;
+    const seconds = lower.match(/(\d+)\s*(segundos?|seconds?)/);
+    if (seconds) return Number(seconds[1]);
+    return 60;
+  };
 
   const onSubmit = async (values: LoginFormValues) => {
     setFeedback(null);
@@ -64,10 +82,39 @@ const Login: React.FC = () => {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro inesperado ao fazer login.';
-      setFeedback({ type: 'error', message });
+      const lowered = message.toLowerCase();
+      const isRateLimited = lowered.includes('muitas tentativas') || lowered.includes('rate limit');
+
+      if (message === 'CONFIRMAR_EMAIL') {
+        setFeedback({ type: 'error', message: 'Confirme seu e-mail antes de entrar.' });
+      } else {
+        setFeedback({ type: 'error', message });
+      }
+
+      if (isRateLimited) {
+        setCooldown(parseWaitSeconds(message));
+      }
+
       reset((current) => ({ ...current, password: '' }));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleResend = async (email: string) => {
+    setResending(true);
+    try {
+      await authService.resendConfirmationEmail(email);
+      setFeedback({ type: 'success', message: 'E-mail de confirmação reenviado.' });
+      setCooldown(60);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Nao foi possivel reenviar o e-mail. Tente novamente.';
+      setFeedback({ type: 'error', message });
+      if (message.toLowerCase().includes('muitas tentativas') || message.toLowerCase().includes('rate limit')) {
+        setCooldown(parseWaitSeconds(message));
+      }
+    } finally {
+      setResending(false);
     }
   };
 
@@ -151,6 +198,11 @@ const Login: React.FC = () => {
                   {...register('password')}
                 />
                 {errors.password && <p className="text-sm text-danger-600">{errors.password.message}</p>}
+                <div className="flex justify-end">
+                  <Link className="text-sm font-semibold text-radar-600 hover:text-radar-700" to="/esqueci-senha">
+                    Esqueceu sua senha?
+                  </Link>
+                </div>
               </div>
 
               {feedback && (
@@ -159,8 +211,21 @@ const Login: React.FC = () => {
                 </div>
               )}
 
-              <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-                {submitting ? 'Entrando...' : 'Entrar'}
+              {feedback?.message === 'Confirme seu e-mail antes de entrar.' && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className="w-full"
+                  disabled={resending || cooldown > 0}
+                  onClick={() => handleResend(watch('email'))}
+                >
+                  {resending ? 'Reenviando...' : cooldown > 0 ? `Reenviar em ${cooldown}s` : 'Reenviar e-mail de confirmação'}
+                </Button>
+              )}
+
+              <Button type="submit" size="lg" className="w-full" disabled={submitting || cooldown > 0}>
+                {submitting ? 'Entrando...' : cooldown > 0 ? `Aguarde ${cooldown}s` : 'Entrar'}
               </Button>
 
               <p className="text-center text-sm text-slate-500">
