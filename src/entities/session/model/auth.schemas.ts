@@ -41,7 +41,7 @@ export type CadastroFormValues = z.infer<typeof cadastroSchema>;
 
 export interface PasswordStrength {
   score: number;
-  label: string;
+  label: 'Fraca' | 'Média' | 'Forte';
   checks: {
     length: boolean;
     lower: boolean;
