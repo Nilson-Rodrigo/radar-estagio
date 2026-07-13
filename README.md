@@ -314,13 +314,14 @@ src/
 
 ## Capturas de tela
 
-> Adicione os prints do projeto na pasta `docs/` e referencie-os abaixo. Os arquivos PNG devem ser adicionados manualmente pelo usuário.
+### Tela de login
+![Tela de login do Radar Estágio](docs/login.png)
 
-```md
-![Login](docs/login.png)
-![Cadastro](docs/cadastro.png)
-![Painel admin](docs/admin.png)
-```
+### Cadastro de estudante
+![Tela de cadastro do Radar Estágio](docs/cadastro.png)
+
+### Painel administrativo
+![Painel administrativo do Radar Estágio](docs/admin.png)
 
 ---
 
