@@ -342,11 +342,11 @@ Este projeto foi desenvolvido pelo grupo com o apoio de um **assistente de códi
 
 ## Autores
 
-Ana Rosa
-Eric Vinícius
-Wesley Tiago
-Moises Bastos
-Nilson Rodrigo 
+* Ana Rosa
+* Eric Vinícius
+* Wesley Tiago
+* Moises Bastos
+* Nilson Rodrigo 
 
 
 **Disciplina:** Programação para Internet I
