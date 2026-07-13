@@ -91,6 +91,39 @@ function mapSupabaseError(error: { message?: string; code?: string } | null | un
     return new Error(`Muitas tentativas. Aguarde ${waitLabel} antes de tentar novamente.`);
   }
 
+  if (
+    code === 'session_not_found' ||
+    message.includes('auth session missing') ||
+    message.includes('session missing') ||
+    message.includes('session_not_found') ||
+    message.includes('jwt expired') ||
+    message.includes('invalid claim') ||
+    message.includes('refresh_token_not_found') ||
+    message.includes('refresh token not found')
+  ) {
+    return new Error('Sua sessão expirou. Faça login novamente para continuar.');
+  }
+
+  if (code === 'otp_expired' || message.includes('otp_expired') || message.includes('token has expired') || message.includes('expired') || message.includes('is invalid or has expired')) {
+    return new Error('O link expirou ou é inválido. Solicite um novo link.');
+  }
+
+  if (code === 'weak_password' || message.includes('password should be') || message.includes('weak password') || message.includes('password is too short')) {
+    return new Error('Senha muito fraca. Use ao menos 8 caracteres com letras, números e símbolos.');
+  }
+
+  if (code === 'validation_failed' || message.includes('unable to validate email address') || message.includes('invalid email')) {
+    return new Error('E-mail inválido. Verifique o endereço digitado.');
+  }
+
+  if (code === 'email_exists' || message.includes('email address is already registered') || message.includes('already registered')) {
+    return new Error('Este e-mail já está associado a uma conta ativa.');
+  }
+
+  if (code === 'signup_disabled' || message.includes('signups not allowed') || message.includes('signup is disabled')) {
+    return new Error('Os cadastros estão temporariamente desativados. Tente novamente mais tarde.');
+  }
+
   if (message.includes('network') || message.includes('timeout') || message.includes('fetch')) {
     return new Error('Erro de comunicação com o servidor. Verifique sua conexão e tente novamente.');
   }
@@ -99,7 +132,7 @@ function mapSupabaseError(error: { message?: string; code?: string } | null | un
     return new Error('A autenticação via Supabase ainda não está configurada. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.');
   }
 
-  return new Error(error.message ?? 'Não foi possível concluir a operação.');
+  return new Error('Não foi possível concluir a operação. Tente novamente em instantes.');
 }
 
 async function getProfileByUserId(userId: string): Promise<Partial<User> | null> {
