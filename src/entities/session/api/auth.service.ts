@@ -1,20 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '../../../shared/lib/supabase';
 import type { User } from '../model/types';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-
-const missingAuthConfig = !supabaseUrl || !supabaseAnonKey;
-
-export const supabase = missingAuthConfig
-  ? null
-  : createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        flowType: 'pkce',
-      },
-    });
 
 function normalizeRole(role: unknown): User['role'] {
   return role === 'admin' ? 'admin' : 'estudante';
@@ -128,7 +113,7 @@ function mapSupabaseError(error: { message?: string; code?: string } | null | un
     return new Error('Erro de comunicação com o servidor. Verifique sua conexão e tente novamente.');
   }
 
-  if (!supabase) {
+  if (!isSupabaseConfigured) {
     return new Error('A autenticação via Supabase ainda não está configurada. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.');
   }
 
@@ -136,7 +121,7 @@ function mapSupabaseError(error: { message?: string; code?: string } | null | un
 }
 
 async function getProfileByUserId(userId: string): Promise<Partial<User> | null> {
-  if (!supabase) {
+  if (!isSupabaseConfigured) {
     return null;
   }
 
@@ -177,11 +162,11 @@ export interface SignUpResult {
 
 export const authService = {
   isConfigured(): boolean {
-    return Boolean(supabase);
+    return isSupabaseConfigured;
   },
 
   subscribeToAuthChanges(callback: (event: string) => void) {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       return { data: { subscription: { unsubscribe: () => undefined } } };
     }
 
@@ -191,7 +176,7 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<User | null> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       return null;
     }
 
@@ -204,7 +189,7 @@ export const authService = {
   },
 
   async signUpWithEmail(email: string, password: string, payload: { nome: string; curso?: string | null; periodo?: number | null }): Promise<SignUpResult> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       throw mapSupabaseError(null);
     }
 
@@ -259,7 +244,7 @@ export const authService = {
   },
 
   async resendConfirmationEmail(email: string): Promise<void> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       throw mapSupabaseError(null);
     }
 
@@ -270,7 +255,7 @@ export const authService = {
   },
 
   async resetPasswordForEmail(email: string): Promise<void> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       throw mapSupabaseError(null);
     }
 
@@ -282,7 +267,7 @@ export const authService = {
   },
 
   async updatePassword(password: string): Promise<void> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       throw mapSupabaseError(null);
     }
 
@@ -293,7 +278,7 @@ export const authService = {
   },
 
   async signInWithPassword(email: string, password: string): Promise<User | null> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       throw mapSupabaseError(null);
     }
 
@@ -310,7 +295,7 @@ export const authService = {
   },
 
   async signOut(): Promise<void> {
-    if (!supabase) {
+    if (!isSupabaseConfigured) {
       return;
     }
 

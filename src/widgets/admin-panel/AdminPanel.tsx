@@ -131,8 +131,8 @@ export default function AdminPage() {
         <div
           className={`rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
             feedback.type === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-              : 'border-red-200 bg-red-50 text-red-700'
+              ? 'border-success-100 bg-success-50 text-success-700'
+              : 'border-danger-100 bg-danger-50 text-danger-700'
           }`}
         >
           {feedback.message}

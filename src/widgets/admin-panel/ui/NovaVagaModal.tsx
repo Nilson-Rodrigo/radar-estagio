@@ -40,13 +40,13 @@ export default function NovaVagaModal({ onClose, onSalvar, vagaEditando }: Props
   }
 
   const inputClass =
-    'w-full rounded-control border border-[#d2e5d8] bg-[#fbfdfc] px-4 py-3 text-slate-900 shadow-sm transition-all duration-200 placeholder:text-slate-400 focus:border-[#a9caba] focus:outline-none focus:ring-2 focus:ring-[#d8eadf]';
+    'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-radar-500 focus:ring-2 focus:ring-radar-500/20';
   const labelClass = 'space-y-2 text-sm font-medium text-slate-800';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm">
-      <Card className="w-full max-w-2xl overflow-hidden border border-[#cfe5d9] bg-[#eef8f2] text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
-        <div className="border-b border-[#d8eadf] bg-[#f7fbf8] px-6 py-5 sm:px-8">
+      <Card className="w-full max-w-2xl overflow-hidden border border-slate-200 bg-white text-slate-900 shadow-2xl">
+        <div className="border-b border-slate-200 bg-slate-50 px-6 py-5 sm:px-8">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Painel administrativo
           </p>
@@ -143,14 +143,14 @@ export default function NovaVagaModal({ onClose, onSalvar, vagaEditando }: Props
               type="button"
               variant="secondary"
               onClick={onClose}
-              className="w-full border border-[#d2e5d8] bg-[#fbfdfc] text-slate-900 hover:bg-white sm:w-auto"
+              className="w-full border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               type="button"
               onClick={salvar}
-              className="w-full border border-[#d2e5d8] bg-white text-slate-900 hover:bg-[#f6fbf7] sm:w-auto"
+              className="w-full sm:w-auto"
             >
               {vagaEditando ? 'Salvar alterações' : 'Cadastrar vaga'}
             </Button>

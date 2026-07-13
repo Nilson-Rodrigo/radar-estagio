@@ -25,10 +25,9 @@ representando uma vaga detectada.
 | `ink` (`900` fundo, `800` superfície de card, `700` bordas) | Substitui slate/navy no modo escuro — dá o tom "grafite de painel" |
 | `success` (verde) | Confirmações (ex: vaga favoritada) |
 | `danger` (vermelho) | Erros e ações destrutivas |
+| `slate` (escala neutra do Tailwind) | Textos, bordas e superfícies neutras no tema claro |
 
-Regra do projeto: nenhuma página usa cores soltas do Tailwind (`purple-*`,
-`emerald-*`, `pink-*`, `blue-*`, `amber-*`). Toda cor vem de `radar`, `ink`,
-`success` ou `danger`.
+Regra do projeto: o acento da marca vem sempre do token `radar`; cores semânticas de estado vêm de `success` (confirmações) e `danger` (erros/ações destrutivas); seções escuras usam a escala `ink`. Para textos, bordas e superfícies neutras usa-se a escala `slate` do Tailwind, de forma consistente em todo o app. Não se usam cores decorativas soltas fora desse conjunto (ex.: `purple-*`, `pink-*`, `blue-*`, `amber-*`, ou valores hex arbitrários como `bg-[#f9fcfa]`).
 
 ## Tipografia
 
@@ -39,7 +38,7 @@ Regra do projeto: nenhuma página usa cores soltas do Tailwind (`purple-*`,
 
 ## Assinatura visual
 
-O `RadarIcon` (`src/components/ui/RadarIcon.tsx`) é o elemento único e
+O `RadarIcon` (`src/shared/ui/RadarIcon.tsx`) é o elemento único e
 memorável do projeto: dois arcos concêntricos (alcance de varredura), uma
 linha de varredura e dois pontos (o centro do radar e um "blip" — a vaga
 detectada). Usado no logo do `Layout.tsx`; pode ser reaproveitado como
@@ -50,7 +49,7 @@ futuramente.
 Excesso de movimento decorativo é, por si só, um dos sinais mais comuns de
 interface "gerada por IA sem direção". O único movimento é sutil, em hover.
 
-## Componentes reutilizáveis (`src/components/ui/`)
+## Componentes reutilizáveis (`src/shared/ui/`)
 
 | Componente | Uso |
 |---|---|
@@ -59,6 +58,8 @@ interface "gerada por IA sem direção". O único movimento é sutil, em hover.
 | `Card.tsx` | Fundo `ink-800` no modo escuro, `rounded-card`, `shadow-card` |
 | `Badge.tsx` | Variantes `brand` (mapeada para `radar`), `success`, `danger`, `neutral` |
 | `PageHeader.tsx` | Cabeçalho padrão dos placeholders de página, título em `font-display` |
+| `PasswordStrength.tsx` | Medidor visual de força de senha (usado em cadastro e redefinição de senha) |
+| `ProtectedRoute.tsx` | Protege rotas que exigem autenticação/role (ex.: /admin, /perfil, /favoritos) |
 
 ## Correções acumuladas nesta padronização
 
@@ -69,6 +70,7 @@ interface "gerada por IA sem direção". O único movimento é sutil, em hover.
 - `JobCard.tsx`, `SearchBar.tsx`, `Filters.tsx`: cores soltas (`purple`,
   `emerald`, `amber`, `blue`, `pink`) substituídas pelos tokens `radar` e pelos
   componentes `Card`/`Badge`.
+- Painel administrativo (`AdminPanel.tsx`, `VagasTable.tsx`, `NovaVagaModal.tsx`): removidos valores hex arbitrários (ex.: `#f9fcfa`, `#d8eadf`) e cores soltas `emerald-*`/`red-*`, substituídos pelos tokens `success`/`danger`, pela escala neutra `slate` e pelo botão primário `radar`.
 
 ## Como usar em novos componentes
 
