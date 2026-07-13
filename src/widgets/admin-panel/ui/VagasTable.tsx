@@ -17,8 +17,8 @@ type VagasTableProps = {
 
 export default function VagasTable({ vagas, onExcluir, onEditar }: VagasTableProps) {
   return (
-    <Card className="overflow-hidden border border-[#d8eadf] bg-white text-slate-900 shadow-sm">
-      <div className="flex items-center justify-between border-b border-[#e4efe7] px-6 py-4 sm:px-8">
+    <Card className="overflow-hidden border border-slate-200 bg-white text-slate-900 shadow-sm">
+      <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 sm:px-8">
         <div>
           <h2 className="font-display text-xl font-bold tracking-tight text-slate-900">
             Vagas cadastradas
@@ -30,8 +30,8 @@ export default function VagasTable({ vagas, onExcluir, onEditar }: VagasTablePro
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-[#e4efe7]">
-          <thead className="bg-[#f9fcfa]">
+        <table className="min-w-full divide-y divide-slate-200">
+          <thead className="bg-slate-50">
             <tr className="text-left text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
               <th className="px-6 py-4 sm:px-8">Empresa</th>
               <th className="px-6 py-4">Vaga</th>
@@ -42,7 +42,7 @@ export default function VagasTable({ vagas, onExcluir, onEditar }: VagasTablePro
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-[#edf4ef] bg-white">
+          <tbody className="divide-y divide-slate-100 bg-white">
             {vagas.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-14 text-center sm:px-8">
@@ -58,7 +58,7 @@ export default function VagasTable({ vagas, onExcluir, onEditar }: VagasTablePro
               </tr>
             ) : (
               vagas.map((vaga) => (
-                <tr key={vaga.id} className="transition-colors hover:bg-[#f8fcf9]">
+                <tr key={vaga.id} className="transition-colors hover:bg-slate-50">
                   <td className="px-6 py-5 sm:px-8">
                     <div className="font-medium text-slate-900">{vaga.empresa}</div>
                   </td>
@@ -77,7 +77,7 @@ export default function VagasTable({ vagas, onExcluir, onEditar }: VagasTablePro
                         variant="secondary"
                         size="sm"
                         onClick={() => onEditar(vaga)}
-                        className="border border-[#d2e5d8] bg-white text-slate-900 hover:bg-[#f6fbf7]"
+                        className="border border-slate-300 bg-white text-slate-900 hover:bg-slate-50"
                       >
                         Editar
                       </Button>
