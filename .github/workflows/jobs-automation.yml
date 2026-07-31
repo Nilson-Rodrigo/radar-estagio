@@ -1,0 +1,37 @@
+name: Automação de Vagas
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-jobs:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: scripts/automation/package-lock.json
+
+      - name: Instalar dependências
+        working-directory: scripts/automation
+        run: npm ci
+
+      - name: Executar automação
+        working-directory: scripts/automation
+        run: npm start
+
+      - name: Notificar falha
+        if: failure()
+        run: echo '❌ Automação de vagas falhou. Verifique os logs.'

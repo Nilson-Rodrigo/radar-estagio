@@ -24,7 +24,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'vagas',
-        element: <Vagas />,
+        element: (
+          <ProtectedRoute allowedRoles={['estudante', 'admin']} redirectTo="/login">
+            <Vagas />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'vagas/:id',

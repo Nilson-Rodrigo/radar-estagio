@@ -1,0 +1,12 @@
+[
+  {
+    "titulo": "Estágio em Desenvolvimento Web",
+    "empresa": "Tech Company",
+    "descricao": "Desenvolver aplicações web com React e Node.js",
+    "cidade": "São Paulo",
+    "modalidade": "Remoto",
+    "area_atuacao": "Tecnologia",
+    "link": "https://example.com/vaga/1",
+    "data_expiracao": "2026-12-31"
+  }
+]

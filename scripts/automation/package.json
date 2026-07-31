@@ -1,0 +1,20 @@
+{
+  "name": "radar-estagio-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx --watch src/index.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^17.4.2",
+    "fast-xml-parser": "^4.3.2",
+    "tsx": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}
