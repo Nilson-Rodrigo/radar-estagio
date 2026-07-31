@@ -7,4 +7,5 @@ export interface Job {
   modalidade: 'Remoto' | 'Híbrido' | 'Presencial';
   area_atuacao: string;
   link: string;
+  data_expiração: string | null;
 }

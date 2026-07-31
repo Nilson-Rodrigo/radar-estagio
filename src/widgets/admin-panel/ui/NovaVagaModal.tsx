@@ -17,6 +17,7 @@ export default function NovaVagaModal({ onClose, onSalvar, vagaEditando }: Props
   const [modalidade, setModalidade] = useState<Job['modalidade']>('Remoto');
   const [areaAtuacao, setAreaAtuacao] = useState('');
   const [link, setLink] = useState('');
+  const [dataExpiracao, setDataExpiracao] = useState('');
 
   useEffect(() => {
     if (!vagaEditando) return;
@@ -27,6 +28,7 @@ export default function NovaVagaModal({ onClose, onSalvar, vagaEditando }: Props
     setModalidade(vagaEditando.modalidade);
     setAreaAtuacao(vagaEditando.area_atuacao);
     setLink(vagaEditando.link);
+    setDataExpiracao(vagaEditando.data_expiração || '');
   }, [vagaEditando]);
 
   function salvar() {
@@ -35,7 +37,7 @@ export default function NovaVagaModal({ onClose, onSalvar, vagaEditando }: Props
       return;
     }
 
-    onSalvar({ titulo, empresa, descricao, cidade, modalidade, area_atuacao: areaAtuacao, link });
+    onSalvar({ titulo, empresa, descricao, cidade, modalidade, area_atuacao: areaAtuacao, link, data_expiração: dataExpiracao || null });
     onClose();
   }
 
@@ -135,6 +137,17 @@ export default function NovaVagaModal({ onClose, onSalvar, vagaEditando }: Props
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
               />
+              <div className="grid gap-4 sm:grid-colos-2">
+                <label className ={labelClass}>
+                  <span>Data de expiração (opcional) </span>
+                  <input
+                  className={inputClass}
+                  type = "date"
+                  value={dataExpiracao}
+                  onChange={(e) => setDataExpiracao(e.target.value)} 
+                  />
+                </label>
+              </div>
             </label>
           </div>
 

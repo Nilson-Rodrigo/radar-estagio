@@ -16,6 +16,8 @@ function sanitizarTermo(termo: string): string {
 
 export async function getJobs(termoBusca?: string, filters?: JobFilters): Promise<Job[]> {
   let query = supabase.from('jobs').select('*');
+  
+  query = query.or('data_expiracao.is.null,data_expiracao.gt.now()')
 
   if (termoBusca && termoBusca.trim() !== '') {
     const termo = sanitizarTermo(termoBusca);
