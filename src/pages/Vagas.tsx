@@ -8,6 +8,7 @@ const Vagas: React.FC = () => {
   const {
     jobs, loading, erro, termoBusca, filters, favoritosIds,
     opcoesFiltro, setTermoBusca, atualizarFiltro, limparFiltros, alternarFavorito,
+    buscaRealizada,
   } = useJobs();
 
   return (
@@ -32,13 +33,19 @@ const Vagas: React.FC = () => {
         <p className="text-center text-danger-600 py-10">{erro}</p>
       )}
 
-      {!loading && !erro && jobs.length === 0 && (
+      {!erro && !buscaRealizada && (
+        <div className="text-center py-10 text-slate-500 dark:text-slate-400">
+          Use a busca ou os filtros para encontrar vagas de estágio.
+        </div>
+      )}
+
+      {!erro && buscaRealizada && !loading && jobs.length === 0 && (
         <div className="text-center py-10 text-slate-500 dark:text-slate-400">
           Nenhuma vaga corresponde aos critérios selecionados. Modifique os termos ou limpe os filtros.
         </div>
       )}
 
-      {!loading && !erro && jobs.length > 0 && (
+      {!erro && buscaRealizada && !loading && jobs.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jobs.map((job) => (
             <JobCard

@@ -31,18 +31,20 @@ interface UseJobsReturn {
   atualizarFiltro: (campo: keyof JobFilters, valor: string) => void;
   limparFiltros: () => void;
   alternarFavorito: (jobId: string) => void;
+  buscaRealizada: boolean;
 }
 
 export function useJobs(): UseJobsReturn {
   const { user, isAuthenticated } = useAuth();
 
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [termoBusca, setTermoBusca] = useState('');
+  const [termoBusca, setTermoBuscaState] = useState('');
   const [filters, setFilters] = useState<JobFilters>(FILTROS_VAZIOS);
   const [opcoesFiltro, setOpcoesFiltro] = useState<FilterOptions>(OPCOES_VAZIAS);
   const [favoritosIds, setFavoritosIds] = useState<string[]>([]);
+  const [buscaRealizada, setBuscaRealizada] = useState(false);
 
   // Opções de filtro (cidades, modalidades, empresas, áreas) são carregadas uma única vez
   useEffect(() => {
@@ -53,15 +55,13 @@ export function useJobs(): UseJobsReturn {
       });
   }, []);
 
-  // Vagas recarregam sempre que a busca textual ou os filtros mudam (UC03)
+  // Vagas recarregam somente após o usuário iniciar uma busca ou aplicar filtros
   useEffect(() => {
+    if (!buscaRealizada) return;
+
     let cancelado = false;
-    /* eslint-disable react-hooks/set-state-in-effect -- reset de loading/erro a cada
-       nova busca ou filtro (UC03); é o padrão de fetch-em-efeito sem lib externa
-       (React Query/SWR), aceito pelo projeto nesta fase mockada. */
     setLoading(true);
     setErro(null);
-    /* eslint-enable react-hooks/set-state-in-effect */
 
     getJobs(termoBusca, filters)
       .then((resultado) => {
@@ -77,12 +77,11 @@ export function useJobs(): UseJobsReturn {
     return () => {
       cancelado = true;
     };
-  }, [termoBusca, filters]);
+  }, [termoBusca, filters, buscaRealizada]);
 
   // Favoritos do usuário carregam assim que a sessão (mockada) estiver pronta (UC04)
   useEffect(() => {
     if (!isAuthenticated || !user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- limpa favoritos ao deslogar, evita vazar favoritos de uma sessao anterior para a proxima (sugestao Sourcery no PR #3)
       setFavoritosIds([]);
       return;
     }
@@ -94,12 +93,19 @@ export function useJobs(): UseJobsReturn {
       });
   }, [isAuthenticated, user]);
 
+  const setTermoBusca = useCallback((valor: string) => {
+    setBuscaRealizada(true);
+    setTermoBuscaState(valor);
+  }, []);
+
   const atualizarFiltro = useCallback((campo: keyof JobFilters, valor: string) => {
+    setBuscaRealizada(true);
     setFilters((atual) => ({ ...atual, [campo]: valor }));
   }, []);
 
   const limparFiltros = useCallback(() => {
-    setTermoBusca('');
+    setBuscaRealizada(true);
+    setTermoBuscaState('');
     setFilters(FILTROS_VAZIOS);
   }, []);
 
@@ -128,5 +134,6 @@ export function useJobs(): UseJobsReturn {
     atualizarFiltro,
     limparFiltros,
     alternarFavorito,
+    buscaRealizada,
   };
 }
